@@ -1,3 +1,4 @@
+import { renderGuide } from './screens/guide';
 import { renderHistory, renderSessionDetail } from './screens/history';
 import { renderHome } from './screens/home';
 import { renderSettings } from './screens/settings';
@@ -20,6 +21,8 @@ async function route(): Promise<void> {
     await renderSessionDetail(app, Number(arg));
   } else if (head === 'history') {
     await renderHistory(app);
+  } else if (head === 'guide') {
+    renderGuide(app);
   } else if (head === 'settings') {
     renderSettings(app);
   } else {

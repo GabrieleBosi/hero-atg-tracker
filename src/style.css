@@ -370,6 +370,107 @@ button.card:active {
   border-bottom: none;
 }
 
+/* --- Guida --- */
+.guide-intro {
+  color: var(--muted);
+  line-height: 1.5;
+  font-size: 0.92rem;
+  margin: 0 0 14px;
+}
+
+.principle-card {
+  padding: 12px 14px;
+}
+
+.principle-head {
+  font-size: 0.95rem;
+}
+
+.principle-text {
+  margin: 6px 0 0;
+  font-size: 0.87rem;
+  line-height: 1.5;
+}
+
+.week-card summary {
+  cursor: pointer;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.week-title {
+  font-weight: 700;
+}
+
+.week-tagline {
+  width: 100%;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.week-recommended {
+  border-color: var(--accent);
+}
+
+.badge {
+  background: var(--accent);
+  color: #14532d;
+  font-size: 0.7rem;
+  font-weight: 700;
+  border-radius: 999px;
+  padding: 3px 10px;
+}
+
+.week-list {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0 0;
+}
+
+.week-list li {
+  display: flex;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.9rem;
+  align-items: baseline;
+}
+
+.week-list li:last-child {
+  border-bottom: none;
+}
+
+.week-day {
+  flex-shrink: 0;
+  width: 118px;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+a.week-what {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.cardio-card {
+  border-color: var(--accent-dark);
+}
+
+.cardio-list {
+  padding-left: 18px;
+  margin: 10px 0;
+}
+
+.cardio-list li {
+  color: var(--muted);
+  font-size: 0.87rem;
+  line-height: 1.5;
+  margin-bottom: 10px;
+}
+
 /* --- Storico --- */
 .back-link {
   color: var(--muted);
