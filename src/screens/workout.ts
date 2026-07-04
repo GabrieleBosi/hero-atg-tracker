@@ -1,10 +1,11 @@
 import { displayName, getCategory, getExercise, getWorkout, HH_WARMUP } from '../data';
+import { exercisePhotoAlt, exercisePhotoUrl, warmupPhotoUrl } from '../data/photos';
 import { getPref, saveSession, setPref } from '../db';
 import { clearDraft, loadDraft, saveDraft } from '../state';
 import { collectStats, type ExerciseStats } from '../stats';
 import { startTimer, stopTimer } from '../timer';
 import type { Session, Slot, WorkoutTemplate } from '../types';
-import { el, esc, fmtRest, fmtSet, fmtSets, toast } from '../ui';
+import { el, esc, fmtRest, fmtSet, fmtSets, openLightbox, toast } from '../ui';
 
 interface TargetOverride {
   sets: string;
@@ -110,12 +111,21 @@ export async function renderWorkout(container: HTMLElement, workoutId: string): 
 
   // --- Riscaldamento (solo Home Hero) ---
   if (template.program === 'homehero') {
-    const items = HH_WARMUP.map(
-      (w) => `<li><span>${esc(w.name)}</span><span class="muted">${esc(w.reps)}</span></li>`
-    ).join('');
-    page.appendChild(
-      el(`<details class="card warmup"><summary>🔥 Riscaldamento</summary><ul class="warmup-list">${items}</ul></details>`)
+    const items = HH_WARMUP.map((w) => {
+      const photo = warmupPhotoUrl(w.name);
+      const thumb = photo
+        ? `<img class="warmup-thumb" src="${esc(photo)}" alt="Riscaldamento: ${esc(w.name)}" loading="lazy" data-name="${esc(w.name)}" />`
+        : '';
+      return `<li>${thumb}<span class="warmup-name">${esc(w.name)}</span><span class="muted">${esc(w.reps)}</span></li>`;
+    }).join('');
+    const warmup = el(
+      `<details class="card warmup"><summary>🔥 Riscaldamento</summary><ul class="warmup-list">${items}</ul></details>`
     );
+    warmup.querySelectorAll<HTMLImageElement>('.warmup-thumb').forEach((img) => {
+      img.addEventListener('error', () => img.remove());
+      img.addEventListener('click', () => openLightbox(img.src, img.alt, img.dataset.name ?? ''));
+    });
+    page.appendChild(warmup);
   }
 
   // --- Card esercizi, raggruppate per superset ---
@@ -153,6 +163,12 @@ export async function renderWorkout(container: HTMLElement, workoutId: string): 
       picker = `<div class="variant-row"><span class="variant-cat">${esc(cat.name)}${cat.nameIt ? ` (${esc(cat.nameIt)})` : ''}</span><select class="variant-select">${options}</select></div>`;
     }
 
+    const photoUrl = exercisePhotoUrl(entry.exerciseId);
+    const photoAlt = exercisePhotoAlt(exercise);
+    const photoHtml = photoUrl
+      ? `<img class="exercise-photo" src="${esc(photoUrl)}" alt="${esc(photoAlt)}" loading="lazy" />`
+      : '';
+
     const card = el(`
       <div class="card exercise-card ${entry.skipped ? 'skipped' : ''}">
         <div class="card-head">
@@ -162,6 +178,7 @@ export async function renderWorkout(container: HTMLElement, workoutId: string): 
           <button class="icon-btn" data-act="skip" title="Salta esercizio">${entry.skipped ? '↩' : '⤼'}</button>
         </div>
         ${picker}
+        ${photoHtml}
         <div class="target-line">${esc(setsLabel)} serie × ${esc(entry.target)} · riposo ${fmtRest(slot.restSec)}${slot.optional ? ' · <em>opzionale</em>' : ''}</div>
         ${exercise.cues ? `<details class="cues"><summary>ℹ Tecnica</summary><p>${esc(exercise.cues)}</p></details>` : ''}
         <div class="stats-line">
@@ -175,6 +192,12 @@ export async function renderWorkout(container: HTMLElement, workoutId: string): 
           <button class="btn btn-log">✓ Serie</button>
         </div>
       </div>`);
+
+    const photoEl = card.querySelector<HTMLImageElement>('.exercise-photo');
+    if (photoEl) {
+      photoEl.addEventListener('error', () => photoEl.remove());
+      photoEl.addEventListener('click', () => openLightbox(photoEl.src, photoAlt, displayName(exercise)));
+    }
 
     const chipsEl = card.querySelector<HTMLElement>('.set-chips')!;
     const renderChips = (): void => {

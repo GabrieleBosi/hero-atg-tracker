@@ -43,6 +43,26 @@ export function fmtDate(iso: string): string {
   });
 }
 
+/** Overlay a schermo intero per vedere una foto ingrandita. */
+export function openLightbox(src: string, alt: string, caption: string): void {
+  document.querySelector('.lightbox')?.remove();
+  const box = el(`
+    <div class="lightbox" role="dialog" aria-label="${esc(caption)}">
+      <img src="${esc(src)}" alt="${esc(alt)}" />
+      <span class="lightbox-caption">${esc(caption)}</span>
+    </div>`);
+  const close = (): void => {
+    box.remove();
+    document.removeEventListener('keydown', onKey);
+  };
+  const onKey = (ev: KeyboardEvent): void => {
+    if (ev.key === 'Escape') close();
+  };
+  box.addEventListener('click', close);
+  document.addEventListener('keydown', onKey);
+  document.body.appendChild(box);
+}
+
 export function toast(msg: string): void {
   document.querySelector('.toast')?.remove();
   const t = el(`<div class="toast">${esc(msg)}</div>`);
